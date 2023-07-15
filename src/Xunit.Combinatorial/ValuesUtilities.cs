@@ -204,8 +204,12 @@ namespace Xunit
             }
             else if (dataType == typeof(int))
             {
-                yield return 0;
-                yield return 1;
+                for (int i = int.MinValue; i < int.MaxValue; i++)
+                {
+                    yield return i;
+                }
+
+                yield return int.MaxValue;
             }
             else if (dataType.GetTypeInfo().IsEnum)
             {
