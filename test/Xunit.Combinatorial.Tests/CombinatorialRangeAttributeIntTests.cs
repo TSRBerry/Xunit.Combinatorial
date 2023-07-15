@@ -3,14 +3,14 @@
 
 using Xunit;
 
-public class CombinatorialRangeAttributeTests
+public class CombinatorialRangeAttributeIntTests
 {
     [Theory]
     [InlineData(0, 5)]
     public void CountOfIntegers_HappyPath_SetsAttributeWithRange(int from, int count)
     {
         object[] values = Enumerable.Range(from, count).Cast<object>().ToArray();
-        var attribute = new CombinatorialRangeAttribute(from, count);
+        var attribute = new CombinatorialRangeAttribute<int>(from, count);
         Assert.Equal(values, attribute.Values);
     }
 
@@ -18,7 +18,7 @@ public class CombinatorialRangeAttributeTests
     [InlineData(0, -2)]
     public void CountOfIntegers_NegativeCount_ArgOutOfRange(int from, int count)
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => new CombinatorialRangeAttribute(from, count));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new CombinatorialRangeAttribute<int>(from, count));
     }
 
     [Theory]
@@ -30,7 +30,7 @@ public class CombinatorialRangeAttributeTests
     {
         object[] expectedValues = Sequence(from, to, step).Cast<object>().ToArray();
 
-        var attribute = new CombinatorialRangeAttribute(from, to, step);
+        var attribute = new CombinatorialRangeAttribute<int>(from, to, step);
         Assert.Equal(expectedValues, attribute.Values);
     }
 
@@ -39,7 +39,7 @@ public class CombinatorialRangeAttributeTests
     [InlineData(1, 5, -1)]
     public void IntegerStep_InvalidIntervalAndStep_ArgOutOfRange(int from, int to, int step)
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => new CombinatorialRangeAttribute(from, to, step));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new CombinatorialRangeAttribute<int>(from, to, step));
     }
 
     internal static IEnumerable<int> Sequence(int from, int to, int step)

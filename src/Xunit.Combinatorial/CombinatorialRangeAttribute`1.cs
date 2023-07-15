@@ -1,40 +1,44 @@
 ﻿// Copyright (c) Andrew Arnott. All rights reserved.
 // Licensed under the Ms-PL license. See LICENSE file in the project root for full license information.
 
+using System.Numerics;
+
 namespace Xunit
 {
     /// <summary>
     /// Specifies which range of values for this parameter should be used for running the test method.
     /// </summary>
+    /// <typeparam name="T">The number type of the parameter.</typeparam>
     [AttributeUsage(AttributeTargets.Parameter)]
-    public class CombinatorialRangeAttribute : Attribute
+    public class CombinatorialRangeAttribute<T> : Attribute
+        where T : INumber<T>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CombinatorialRangeAttribute"/> class.
+        /// Initializes a new instance of the <see cref="CombinatorialRangeAttribute{T}"/> class.
         /// </summary>
         /// <param name="from">The value at the beginning of the range.</param>
         /// <param name="count">
         /// The quantity of consecutive integer values to include.
         /// Cannot be less than 1, which would conceptually result in zero test cases.
         /// </param>
-        public CombinatorialRangeAttribute(int from, int count)
+        public CombinatorialRangeAttribute(T from, T count)
         {
-            if (count < 1)
+            if (count < T.One)
             {
                 throw new ArgumentOutOfRangeException(nameof(count));
             }
 
-            object[] values = new object[count];
-            for (int i = 0; i < count; i++)
+            var values = new List<object>();
+            for (T i = T.Zero; i < count; i++)
             {
-                values[i] = from + i;
+                values.Add(from + i);
             }
 
-            this.Values = values;
+            this.Values = values.ToArray();
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CombinatorialRangeAttribute"/> class.
+        /// Initializes a new instance of the <see cref="CombinatorialRangeAttribute{T}"/> class.
         /// </summary>
         /// <param name="from">The value at the beginning of the range.</param>
         /// <param name="to">
@@ -47,16 +51,16 @@ namespace Xunit
         /// Cannot be less than one. Stepping zero or backwards is not useful.
         /// Stepping over "to" does not add another value to the range.
         /// </param>
-        public CombinatorialRangeAttribute(int from, int to, int step)
+        public CombinatorialRangeAttribute(T from, T to, T step)
         {
-            if (step > 0)
+            if (step > T.Zero)
             {
                 if (to < from)
                 {
                     throw new ArgumentOutOfRangeException(nameof(to));
                 }
             }
-            else if (step < 0)
+            else if (step < T.Zero)
             {
                 if (to > from)
                 {
@@ -68,14 +72,24 @@ namespace Xunit
                 throw new ArgumentOutOfRangeException(nameof(step));
             }
 
-            int count = ((to - from) / step) + 1;
-            object[] values = new object[count];
-            for (int i = 0; i < count; i++)
+            var values = new List<object>();
+
+            if (from < to)
             {
-                values[i] = from + (i * step);
+                for (T i = from; i <= to; i += step)
+                {
+                    values.Add(i);
+                }
+            }
+            else
+            {
+                for (T i = from; i >= to; i += step)
+                {
+                    values.Add(i);
+                }
             }
 
-            this.Values = values;
+            this.Values = values.ToArray();
         }
 
         /// <summary>

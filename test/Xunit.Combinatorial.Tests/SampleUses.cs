@@ -47,7 +47,7 @@ public class SampleUses
     }
 
     [Theory, CombinatorialData]
-    public void CombinatorialCustomRange([CombinatorialRange(0, 5)] int p1, [CombinatorialRange(0, 3, 2)] int p2)
+    public void CombinatorialCustomRange([CombinatorialRange<int>(0, 5)] int p1, [CombinatorialRange<int>(0, 3, 2)] int p2)
     {
         // Combinatorial generates these test cases:
         // 0 0
